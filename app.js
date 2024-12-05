@@ -3,9 +3,15 @@ require('dotenv').config();
 const express = require('express');
 const expressLayout = require('express-ejs-layouts');
 
+const connectDB = require('./server/config/db');
+
 const app = express();
 const PORT = 3000 || process.env.PORT;
 
+//Connecting to Database
+connectDB();
+
+//middleware
 app.use(express.static('public'));
 
 //Templating Engine

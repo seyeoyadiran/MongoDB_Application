@@ -161,3 +161,173 @@ img {
 .header__nav ul a.active{
     color: var(--gray);
 }
+
+/* Author - Homepage */
+
+.author {
+    padding: 10px 0;
+    text-align: center;
+}
+
+.author__heading{
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+
+.author__body{
+    font-size: var(--font-size-md);
+    margin: 5px 0 40px 0;
+}
+
+/* Home Articles List */
+
+.article__heading {
+    margin-top: 4rem;
+    font-weight: 400;
+
+}
+
+.article-ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    font-size: clamp(1.13rem, calc(1.08rem + 0.22vw), 1.25rem);
+    display: flex;
+    flex-direction: column;
+}
+
+.article-list-date{
+    font-size: var(--font-size-base);
+    color: var(--gray);
+    width: 260px;
+    display: inline-block;
+}
+
+.article-ul li a {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-decoration: none;
+    margin: 18px 0;
+}
+
+@media only screen and (min-width: 768px){
+    .article-ul li a {
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .article-list-date{
+        text-align: right;
+    }
+}
+
+.article-ul li {
+    font-size: 24px;
+    cursor: pointer;
+    transition: filter 0.1s;
+}
+
+.article-ul li:not(:last-child){
+    border-bottom: 1px solid var(--gray-light);
+}
+
+.article-ul li:hover{
+    filter: none;
+}
+
+.article-ul:hover li{
+    filter: blur(3px);
+}
+
+.article-ul:hover li:hover{
+    filter: none;
+}
+
+.pagination{
+    font-size: 1.3rem;
+    color: var(--gray);
+    text-decoration: none;
+    margin-top: 40px;
+    display: inline-block;
+}
+
+.pagination:hover {
+    color: var(--black);
+}
+
+.article{
+    white-space: pre-wrap;
+}
+
+/* Footer */
+.footer{
+    margin: 4rem;
+    text-align: center;
+}
+
+
+/* SearchBar*/
+
+.searchBar {
+    visibility: hidden;
+    transform: translateY(-100px);
+    background-color: var(--black);
+    padding: 4px 0;
+    position: absolute;
+    left: 0;
+    right: 0;
+}
+
+.searchBar.open {
+    transform: translateY(0);
+    transition: transform 0.1s;
+}
+
+.searchBar input {
+    margin: 0;
+    padding: 0;
+}
+
+#searchClose {
+    position: absolute;
+    top: 0;
+    right: 0;
+    color: var(--gray-light);
+    padding: 15px;
+}
+
+
+/* Admin Dashboard*/
+
+.admin-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.admin-posts{
+    padding: 0;
+    margin: 0;
+}
+
+.admin-post-controls form {
+    display: block;
+}
+
+.admin-post-controls .btn {
+    display: inline-block;
+    background-color: var(--black);
+    color: var(--gray-light);
+    border: 0;
+    text-decoration: none;
+    font-size: .8rem;
+    padding: 4px 8px;
+    line-height: 2;
+}
+
+.admin-posts li {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+}
