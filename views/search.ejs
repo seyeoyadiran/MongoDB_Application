@@ -1,16 +1,68 @@
 <div class="author">
-    <h1 class="author__heading"> Search Results</h1>
+    <h1 class="author__heading">Search Results</h1>
 </div>
 
-<section class="articles">
-    <ul class="article-ul">
-        <% data.forEach(post => { %>
-        <li>
-            <a href="/post/<%= post._id %>">
-                <span> <%= post.title %>  </span>
-                <span class="article-list__date"> <%= post.createdAt.toDateString() %>  </span>
-            </a>
-        </li>
-        <% }) %>
-    </ul>
+<section class="articles container">
+    <% if (data && data.length > 0) { %>
+        <div class="search-results">
+            <% data.forEach(post => { %>
+                <article class="search-card">
+                    <a href="/post/<%= post._id %>">
+                        <h2 class="search-card__title"><%= post.title %></h2>
+                    </a>
+                    <p class="search-card__excerpt">
+                        <%= post.body.length > 150 ? post.body.substring(0, 150) + "..." : post.body %>
+                    </p>
+                    <span class="search-card__date">
+                        <%= post.createdAt.toDateString() %>
+                    </span>
+                </article>
+            <% }) %>
+        </div>
+    <% } else { %>
+        <p>No posts found matching your search. Try again with another keyword.</p>
+    <% } %>
 </section>
+
+<style>
+    .search-results {
+        display: grid;
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+
+    .search-card {
+        padding: 1.5rem;
+        border-radius: 10px;
+        background: #111; /* dark background */
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .search-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 6px 14px rgba(0,0,0,0.5);
+    }
+
+    .search-card__title {
+        font-size: 1.5rem;
+        color: yellow;
+        margin-bottom: 0.5rem;
+    }
+
+    .search-card__title:hover {
+        text-decoration: underline;
+    }
+
+    .search-card__excerpt {
+        font-size: 1rem;
+        color: #ddd;
+        margin-bottom: 1rem;
+        line-height: 1.5;
+    }
+
+    .search-card__date {
+        font-size: 0.9rem;
+        color: #aaa;
+    }
+</style>

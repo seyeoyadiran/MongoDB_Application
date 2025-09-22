@@ -1,1 +1,184 @@
-<h1>About</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>About - Oluwaseye Oyadiran</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --border-radius: 10px;
+            --font-size-xl: 2.5rem;
+            --font-size-lg: 1.8rem;
+            --font-size-md: 1.1rem;
+            --font-size-sm: 0.9rem;
+            --black: #1c1c1c;
+            --gray-light: #f0f0f0;
+        }
+
+        body {
+            font-family: "Poppins", sans-serif;
+            background-color: #2C2C54;
+            color: white;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        .about-hero {
+            display: flex;
+            flex-wrap: wrap;
+            max-width: 1000px;
+            margin: 50px auto;
+            background-color: #1c1c1c;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* Left side: profile image - Modified to take up only 1/5 of height */
+        .about-hero .profile {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+        }
+
+        .profile img {
+            width: 100%;
+            max-height: 200px; /* Fixed height to limit image size */
+            object-fit: cover;
+            border-radius: var(--border-radius);
+            transition: transform 0.3s ease;
+        }
+
+        .profile img:hover {
+            transform: scale(1.05);
+        }
+
+        /* Right side: text content */
+        .about-hero .content {
+            flex: 2;
+            padding: 40px 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .content h1 {
+            font-size: var(--font-size-xl);
+            margin-bottom: 15px;
+            color: white;
+        }
+
+        .content h2 {
+            font-size: var(--font-size-lg);
+            margin: 25px 0 15px;
+            color: white;
+        }
+
+        .content p {
+            font-size: var(--font-size-md);
+            line-height: 1.7;
+            margin-bottom: 25px;
+        }
+
+        /* Life categories */
+        .life-categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .category-card {
+            background-color: #2C2C54;
+            color: white;
+            padding: 20px;
+            flex: 1 1 calc(50% - 15px);
+            border-radius: var(--border-radius);
+            text-align: center;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            cursor: pointer;
+            min-width: 120px;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            background-color: #3d3d6b;
+        }
+
+        .category-card h3 {
+            margin: 0;
+            font-size: var(--font-size-md);
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 10px 20px;
+            background-color: #2C2C54;
+            color: white;
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            font-weight: 500;
+            transition: background 0.2s, color 0.2s;
+            align-self: start;
+        }
+
+        .back-link:hover {
+            background-color: white;
+            color: #2C2C54;
+        }
+
+        @media (max-width: 768px) {
+            .about-hero {
+                flex-direction: column;
+            }
+            .category-card {
+                flex: 1 1 100%;
+            }
+            .profile {
+                padding: 20px;
+            }
+            .profile img {
+                max-height: 150px; /* Slightly smaller on mobile */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="about-hero container">
+
+        <div class="profile">
+            <!-- Placeholder image - replace with your actual profile image -->
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80" alt="Oluwaseye Oyadiran">
+        </div>
+
+        <div class="content">
+            <h1>Hi, I'm Oluwaseye Oyadiran</h1>
+            <p>
+                I am a Nigerian-born tech professional and aspiring serial entrepreneur, currently building my career in the United States. My foundation was solidified with a Bachelor's in Computer Science, where I complemented my academic studies with hands-on experience through internships at various companies. This unique blend of rigorous technical education and practical industry exposure has equipped me with a comprehensive skill set. Now, I am focused on channeling this expertise, along with a growing business acumen, to identify market opportunities and build innovative solutions. My ultimate goal is to transition from a tech professional into a successful serial entrepreneur, creating ventures that make a meaningful impact.
+            </p>
+
+            <h2>Life Categories</h2>
+            <div class="life-categories">
+                <div class="category-card"><h3>Entry Life</h3></div>
+                <div class="category-card"><h3>Professional Life</h3></div>
+                <div class="category-card"><h3>Personal Life</h3></div>
+                <div class="category-card"><h3>Philanthropy</h3></div>
+            </div>
+
+            <a href="/" class="back-link">&larr; Back to Home</a>
+        </div>
+
+    </div>
+
+</body>
+</html>

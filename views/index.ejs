@@ -1,29 +1,141 @@
- <div class="author">
-    <h1> Hi, I am Oluwaseye Oyadiran</h1>
-    <p class="author"> Software Engineer and Entrepreneur.</p>
- </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Oluwaseye Oyadiran - Tech Professional & Entrepreneur</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Hero Section Overlay */
+        .hero-container {
+            position: relative;
+            text-align: center;
+            margin-bottom: 60px;
+        }
 
- <img src="/img/Cinc.jpg" alt="Selfie" height="528" width="981" class="hero-image" >
- 
- 
- <section class="articles">
-    <h2 class="articles_heading">Latest Posts</h2>
+        .hero-container::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.45); /* subtle dark overlay */
+            border-radius: var(--border-radius);
+            z-index: 1;
+        }
 
-    <ul class="article-ul">
-        <% data.forEach(post => { %>
-        <li>
-            <a href="/post/<%= post._id %>">
-                <span> <%= post.title %>  </span>
-                <span class="article-list__date"> <%= post.createdAt.toDateString() %>  </span>
-            </a>
-        </li>
-        <% }) %>
-    </ul>
+        .hero-text-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: yellow;
+            z-index: 2;
+            text-align: center;
+        }
 
-    <% if (nextPage !== null) { %>
-        <a href="/?page=<%= nextPage %>" class="pagination">&lt; View Older Posts</a>
-    <% } %>
+        .hero-text-overlay h1 {
+            font-size: var(--font-size-xl);
+            margin-bottom: 10px;
+        }
 
-    
-</section>
+        .hero-text-overlay p {
+            font-size: var(--font-size-md);
+        }
 
+        /* Article cards */
+        .article-ul li {
+            background-color: #1c1c1c;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: var(--border-radius);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .article-ul li:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .article-ul li a {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: yellow;
+            font-weight: 500;
+        }
+
+        .article-list-date {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 18px;
+            background: var(--black);
+            color: yellow;
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .pagination:hover {
+            background: var(--gray-light);
+            color: var(--black);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-text-overlay h1 {
+                font-size: clamp(1.8rem, 5vw, 2.5rem);
+            }
+            .hero-text-overlay p {
+                font-size: clamp(1rem, 3vw, 1.2rem);
+            }
+            .article-ul li {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Hero Section -->
+    <div class="hero-container container">
+        <img src="/img/Cinc.jpg" alt="Oluwaseye Oyadiran" class="hero-image">
+        <div class="hero-text-overlay">
+            <h1>Hi, I am Oluwaseye Oyadiran</h1>
+            <p>Tech Professional & Entrepreneur</p>
+        </div>
+    </div>
+
+    <!-- Articles Section -->
+    <section class="articles container">
+        <h2 class="article__heading">Latest Posts</h2>
+
+        <ul class="article-ul">
+            <% if (data && data.length > 0) { %>
+                <% data.forEach(post => { %>
+                    <li>
+                        <a href="/post/<%= post._id %>">
+                            <span><%= post.title %></span>
+                            <span class="article-list-date"><%= post.createdAt.toDateString() %></span>
+                        </a>
+                    </li>
+                <% }) %>
+            <% } else { %>
+                <li>No posts found.</li>
+            <% } %>
+        </ul>
+
+        <% if (nextPage !== null) { %>
+            <a href="/?page=<%= nextPage %>" class="pagination">&lt; View Older Posts</a>
+        <% } %>
+    </section>
+
+
+</body>
+</html>

@@ -17,3 +17,4 @@ You may need to edit the .env file to your Mongodb_URI to get MONGODB backend co
 Side note if you want to use the app and use the admin options then you would need to go into index.ejs and register an account
 - Then to see the options to add, delete, or edit, then you would go to localhost:3000/admin  or localhost:3000/dashboard to delete and edit posts after creating an admin account 
 # MyBlog
+# MyBlog

@@ -1,25 +1,19 @@
-document.addEventListener('DOMContentLoaded', function(){
 
-    const allButtons = document.querySelectorAll('.searchBtn');
+
+// This script should only run on dashboard pages, not login page
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('Dashboard JavaScript loaded');
+    
+    // Add any dashboard-specific JavaScript here
+    // For example: post management, editing, etc.
+    
+    // Search functionality (if needed)
+    const searchBtn = document.querySelector('.searchBtn');
     const searchBar = document.querySelector('.searchBar');
-    const searchInput = document.getElementById('searchInput');
-    const searchClose = document.getElementById('searchClose');
-
-
-    for (var i  = 0; i < allButtons.length; i++){
-
-        allButtons[i].addEventListener('click', function(){
-            searchBar.style.visibility = 'visible';
-            searchBar.classList.add('open');
-            this.setAttribute('aria-expanded', 'true');
-            searchInput.focus();
+    
+    if (searchBtn && searchBar) {
+        searchBtn.addEventListener('click', () => {
+            searchBar.classList.toggle('open');
         });
     }
-
-    searchClose.addEventListener('click', function(){
-        searchBar.style.visibility = 'hidden';
-        searchBar.classList.remove('open');
-        this.setAttribute('aria-expanded', 'false');
-    });
-
 });
