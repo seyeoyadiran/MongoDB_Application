@@ -38,7 +38,7 @@
         .admin-container {
             width: 100%;
             max-width: 800px;
-            background: #2d2d2d; /* Solid container background */
+            background: #2d2d2d;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             overflow: hidden;
@@ -159,12 +159,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            flex: 1;
         }
 
         .btn-primary {
             background: var(--yellow);
             color: #1c1c1c;
+            flex: 2;
         }
 
         .btn-primary:hover {
@@ -175,10 +175,28 @@
             background: #444;
             color: var(--yellow);
             border: 1px solid #555;
+            flex: 1;
         }
 
         .btn-secondary:hover {
             background: #555;
+        }
+        
+        .btn-warning {
+            background: #ffa502;
+            color: #1c1c1c;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .btn-warning:hover {
+            background: #e59400;
         }
 
         .btn i {
@@ -197,33 +215,79 @@
             .form-actions {
                 flex-direction: column;
             }
+            
+            .media-actions {
+                flex-direction: column;
+            }
         }
 
-        /* File preview styling */
-        .file-preview {
-            margin-top: 12px;
-            display: none;
-            padding: 12px;
+        /* Selected media styling */
+        .selected-media {
+            margin-bottom: 15px;
+            padding: 15px;
             background: #3a3a3a;
             border-radius: 6px;
-            border: 1px dashed #555;
+            border: 1px solid #555;
+            position: relative;
         }
 
-        .file-preview.active {
+        .selected-media p {
+            font-weight: 600;
+            color: var(--yellow);
+            margin-bottom: 10px;
+        }
+
+        .selected-media img, .selected-media video {
+            max-width: 100%;
+            border-radius: 4px;
             display: block;
         }
 
-        .file-preview img, .file-preview video {
-            max-width: 100%;
-            border-radius: 4px;
-            margin-bottom: 8px;
+        .media-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
         }
 
-        .file-preview .file-name {
-            font-weight: 600;
-            color: var(--yellow);
+        .remove-media-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .remove-media-btn:hover {
+            background: #ff3742;
+        }
+
+        .remove-media-btn i {
+            margin-right: 5px;
+        }
+
+        /* Media removed state */
+        .media-removed {
+            opacity: 0.5;
+            border: 2px dashed #ff4757;
         }
         
+        .media-removed-message {
+            color: #ff4757;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        
+        .no-media-message {
+            color: rgba(255, 255, 255, 0.5);
+            font-style: italic;
+            margin-top: 10px;
+        }
+
         /* Back link styling */
         .back-link {
             display: inline-flex;
@@ -264,6 +328,8 @@
             color: #ff6b81;
             border: 1px solid rgba(255, 107, 129, 0.3);
         }
+
+
     </style>
 </head>
 <body>
@@ -277,6 +343,9 @@
             <div class="status-message" id="statusMessage"></div>
             
             <form method="POST" action="/add-post" enctype="multipart/form-data" id="postForm">
+                <!-- Hidden field to track media removal -->
+                <input type="hidden" id="mediaRemoved" name="mediaRemoved" value="false">
+                
                 <div class="form-group">
                     <label for="title" class="form-label">
                         <i class="fas fa-heading"></i> Post Title
@@ -288,11 +357,33 @@
                     <label for="featuredMedia" class="form-label">
                         <i class="fas fa-image"></i> Featured Media
                     </label>
-                    <div>
+                    
+                    <!-- Selected media display -->
+                    <div class="selected-media" id="selectedMedia" style="display: none;">
+                        <p>Selected media:</p>
+                        <div id="mediaElementContainer"></div>
+                        
+                        <div class="media-actions">
+                            <button type="button" class="remove-media-btn" id="removeMediaBtn">
+                                <i class="fas fa-trash"></i> Remove Media
+                            </button>
+                            <button type="button" class="btn-warning" id="restoreMediaBtn" style="display: none;">
+                                <i class="fas fa-undo"></i> Choose Different File
+                            </button>
+                        </div>
+                        <div id="mediaRemovedMessage" class="media-removed-message" style="display: none;">
+                            Media will not be included with this post
+                        </div>
+                    </div>
+                    
+                    <div id="noMediaMessage" class="no-media-message">
+                        No media selected
+                    </div>
+                    
+                    <div style="margin-top: 15px;">
                         <input type="file" id="featuredMedia" name="featuredMedia" class="form-file" accept="image/*,video/*">
                         <span class="file-info">Supported: JPEG, PNG, GIF, MP4, MOV, AVI, WebM (Max 50MB)</span>
                     </div>
-                    <div class="file-preview" id="filePreview"></div>
                 </div>
                 
                 <div class="form-group">
@@ -319,37 +410,83 @@
     </div>
 
     <script>
-        // File preview functionality
+        // File selection functionality
         document.getElementById('featuredMedia').addEventListener('change', function(e) {
             const file = e.target.files[0];
-            const preview = document.getElementById('filePreview');
+            const selectedMedia = document.getElementById('selectedMedia');
+            const noMediaMessage = document.getElementById('noMediaMessage');
+            const mediaElementContainer = document.getElementById('mediaElementContainer');
+            const mediaRemovedInput = document.getElementById('mediaRemoved');
             
             if (file) {
-                preview.innerHTML = '';
-                preview.classList.add('active');
+                // Hide "no media" message and show selected media section
+                noMediaMessage.style.display = 'none';
+                selectedMedia.style.display = 'block';
+                selectedMedia.classList.remove('media-removed');
+                mediaRemovedInput.value = 'false';
                 
-                const fileName = document.createElement('div');
-                fileName.className = 'file-name';
-                fileName.textContent = `Selected: ${file.name}`;
-                preview.appendChild(fileName);
+                // Clear previous content
+                mediaElementContainer.innerHTML = '';
                 
+                // Create and append the appropriate media element
                 if (file.type.startsWith('image/')) {
                     const img = document.createElement('img');
                     img.src = URL.createObjectURL(file);
-                    preview.insertBefore(img, fileName);
+                    img.alt = 'Selected image';
+                    img.style.maxWidth = '100%';
+                    img.style.maxHeight = '300px';
+                    mediaElementContainer.appendChild(img);
                 } else if (file.type.startsWith('video/')) {
                     const video = document.createElement('video');
-                    video.controls = true;
                     video.src = URL.createObjectURL(file);
+                    video.controls = true;
                     video.style.maxWidth = '100%';
-                    preview.insertBefore(video, fileName);
+                    video.style.maxHeight = '300px';
+                    mediaElementContainer.appendChild(video);
                 }
+                
+                // Show file name
+                const fileName = document.createElement('div');
+                fileName.className = 'file-name';
+                fileName.textContent = `File: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+                fileName.style.marginTop = '10px';
+                mediaElementContainer.appendChild(fileName);
+                
+                // Reset removal state
+                document.getElementById('removeMediaBtn').style.display = 'block';
+                document.getElementById('restoreMediaBtn').style.display = 'none';
+                document.getElementById('mediaRemovedMessage').style.display = 'none';
             } else {
-                preview.classList.remove('active');
+                // No file selected
+                selectedMedia.style.display = 'none';
+                noMediaMessage.style.display = 'block';
+                mediaRemovedInput.value = 'false';
             }
         });
 
-        // Form submission feedback
+        // Media removal functionality
+        const removeMediaBtn = document.getElementById('removeMediaBtn');
+        const restoreMediaBtn = document.getElementById('restoreMediaBtn');
+        const mediaRemovedMessage = document.getElementById('mediaRemovedMessage');
+        const selectedMedia = document.getElementById('selectedMedia');
+        const fileInput = document.getElementById('featuredMedia');
+        const mediaRemovedInput = document.getElementById('mediaRemoved');
+        
+        removeMediaBtn.addEventListener('click', function() {
+            selectedMedia.classList.add('media-removed');
+            mediaRemovedInput.value = 'true';
+            removeMediaBtn.style.display = 'none';
+            restoreMediaBtn.style.display = 'block';
+            mediaRemovedMessage.style.display = 'block';
+        });
+        
+        restoreMediaBtn.addEventListener('click', function() {
+            // Reset the file input and show file picker
+            fileInput.value = '';
+            fileInput.click();
+        });
+
+        // Form submission handling
         document.getElementById('postForm').addEventListener('submit', function(e) {
             const submitBtn = this.querySelector('button[type="submit"]');
             const originalText = submitBtn.innerHTML;
@@ -383,57 +520,3 @@
     </script>
 </body>
 </html>
-
-
-<!-- 
-
- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Post - Admin</title>
-    <link rel="stylesheet" href="/css/style.css">
-</head>
-<body>
-    <div class="container">
-        <h1>Add New Post</h1>
-        
-        <form method="POST" action="/add-post" enctype="multipart/form-data">
-            <div class="form-group">
-                <label for="title">Title</label>
-                <input type="text" id="title" name="title" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="featuredMedia">Featured Image/Video</label>
-                <input type="file" id="featuredMedia" name="featuredMedia" accept="image/*,video/*">
-                <small>Supported formats: JPEG, PNG, GIF, MP4, MOV, AVI, WebM (Max 10MB)</small>
-            </div>
-            
-            <div class="form-group">
-                <label for="body">Content</label>
-                <textarea id="body" name="body" rows="10" required></textarea>
-            </div>
-            
-            <button type="submit" class="btn btn-primary">Create Post</button>
-            <a href="/dashboard" class="btn btn-secondary">Cancel</a>
-        </form>
-    </div>
-</body>
-</html>  -->
-
-<!-- <a href="/dashboard">&larr; Back</a>
-<div class="admin-title">
-    <h2> Add New Post</h2>
-</div>
-
-<form action="/add-post" method="POST"> 
-    <label for="title"><b>Title</b></label>
-    <input type="text" placeholder="Post Title" name="title">
-
-    <label for="body"><b>Content</b></label>
-    <textarea name="body" rows="10" cols = "50"></textarea>
-
-    <input type="submit" value="Add" class="btn">
-</form> -->

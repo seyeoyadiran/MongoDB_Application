@@ -1,6 +1,22 @@
 const express = require('express');
 const router = express.Router();
 const Post = require('../models/Post');
+const SiteVisit = require('../models/Sitevisit');
+
+
+// Helper function to track site visits
+async function trackSiteVisit() {
+    try {
+        const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+        await SiteVisit.findOneAndUpdate(
+            { date: today },
+            { $inc: { count: 1 }, lastUpdated: new Date() },
+            { upsert: true, new: true }
+        );
+    } catch (error) {
+        console.error('Error tracking site visit:', error);
+    }
+}
 
 /*
 Get
@@ -8,6 +24,9 @@ Get
 */
 router.get('', async (req, res) => {
     try {
+        // Track site visit for homepage
+        await trackSiteVisit();
+
         const locals = {
             title: "Oluwaseye's Blog",
             description: "Simple Blog Created with NodeJs, Express, and Mongodb"
@@ -34,6 +53,11 @@ router.get('', async (req, res) => {
         });
     } catch (error) {
         console.log(error);
+        res.status(500).render('error', {
+            title: 'Error',
+            message: 'There was an error loading the homepage.',
+            currentRoute: '/'
+        });
     }
 });
 
@@ -45,11 +69,35 @@ router.get('/post/:id', async (req, res) => {
     try {
         let slug = req.params.id;
 
-        const data = await Post.findById({ _id: slug });
+        // Validate if slug is a valid MongoDB ObjectId
+        if (!slug.match(/^[0-9a-fA-F]{24}$/)) {
+            return res.status(404).render('404', {
+                title: 'Post Not Found',
+                message: 'Invalid post ID format.',
+                currentRoute: '/'
+            });
+        }
+
+        const data = await Post.findById(slug);
+
+        // NULL CHECK
+        if (!data) {
+            return res.status(404).render('404', {
+                title: 'Post Not Found',
+                message: 'The post you are looking for does not exist.',
+                currentRoute: '/'
+            });
+        }
+
+        // Increment post views
+        await Post.findByIdAndUpdate(slug, { $inc: { views: 1 } });
+
+        // Track site visit for post page
+        await trackSiteVisit();
 
         const locals = {
             title: data.title,
-            description: "Simple Blog Created with NodeJs, Express, and Mongodb"
+            description: data.body ? data.body.substring(0, 160) : "Simple Blog Created with NodeJs, Express, and Mongodb"
         }
 
         res.render('post', {
@@ -60,8 +108,15 @@ router.get('/post/:id', async (req, res) => {
     }
     catch (error) {
         console.log(error);
+        res.status(500).render('error', {
+            title: 'Error',
+            message: 'There was an error loading the post.',
+            currentRoute: '/'
+        });
     }
-})
+});
+
+// ... rest of your main.js routes remain the same
 
 /***
  * Post /
@@ -91,6 +146,11 @@ router.post('/search', async (req, res) => {
         })
     } catch (error) {
         console.log(error);
+        res.status(500).render('error', {
+            title: 'Error',
+            message: 'There was an error performing the search.',
+            currentRoute: '/'
+        });
     }
 })
 

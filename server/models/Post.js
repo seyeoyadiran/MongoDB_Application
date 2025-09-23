@@ -18,6 +18,10 @@ const PostSchema = new mongoose.Schema({
         enum: ['image', 'video', null],
         default: null
     },
+    views: {
+        type: Number,
+        default: 0
+    },
     createdAt: {
         type: Date,
         default: Date.now
@@ -30,6 +34,7 @@ const PostSchema = new mongoose.Schema({
 
 module.exports = mongoose.model('Post', PostSchema);
 
+
 // const mongoose = require('mongoose');
 
 // const PostSchema = new mongoose.Schema({
@@ -40,6 +45,15 @@ module.exports = mongoose.model('Post', PostSchema);
 //     body: {
 //         type: String,
 //         required: true,
+//     },
+//     featuredImage: {
+//         type: String,
+//         required: false,
+//     },
+//     mediaType: {
+//         type: String,
+//         enum: ['image', 'video', null],
+//         default: null
 //     },
 //     createdAt: {
 //         type: Date,
