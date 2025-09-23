@@ -1,24 +1,73 @@
 <header class="header">
-    <a href="/" class="header__logo" > Admin Panel </a>
+    <a href="/dashboard" class="header__logo">Admin Panel</a>
 
-    <nav class="header__nav" >
+    <nav class="header__nav">
         <ul>
-            <li>
-                <a href="/" class="">Home</a>
-            </li>
-            <li>
-                <a href="/about" class="">About</a>
-            </li>
-            <li>
-                <a href="/contact" class="">Contact</a>
-            </li>
+            <li><a href="/dashboard" class="<%= currentRoute === '/dashboard' ? 'active' : '' %>">Dashboard</a></li>
+            <li><a href="/" class="<%= currentRoute === '/' ? 'active' : '' %>">Home</a></li>
+            <li><a href="/about" class="<%= currentRoute === '/about' ? 'active' : '' %>">About</a></li>
+            <li><a href="/contact" class="<%= currentRoute === '/contact' ? 'active' : '' %>">Contact</a></li>
         </ul>
-
     </nav>
 
     <div class="header__button">
-        <a href="/logout">
-            Logout
-        </button> 
+        <a href="/logout" class="logout-btn">Logout</a>
     </div>
-</header>  
+</header>
+
+<style>
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background: rgba(28,28,28,0.95);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.header__logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #FFD700;
+    text-decoration: none;
+}
+
+.header__nav ul {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+    margin: 0;
+    padding: 0;
+}
+
+.header__nav a {
+    text-decoration: none;
+    color: #fff;
+    font-weight: 500;
+    transition: color 0.3s ease, border-bottom 0.3s ease;
+    padding-bottom: 2px;
+}
+
+.header__nav a:hover,
+.header__nav a.active {
+    color: #FFD700;
+    border-bottom: 2px solid #FFD700;
+}
+
+.header__button .logout-btn {
+    padding: 6px 14px;
+    background: #FFD700;
+    color: #000;
+    font-weight: 600;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.header__button .logout-btn:hover {
+    background: #e6c200;
+    transform: translateY(-2px);
+}
+</style>

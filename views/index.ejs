@@ -6,22 +6,33 @@
     <link rel="stylesheet" href="/css/style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        /* Hero Section Overlay */
+        /* Hero Section */
         .hero-container {
             position: relative;
             text-align: center;
             margin-bottom: 60px;
+            border-radius: 15px;
+            overflow: hidden;
         }
 
-        .hero-container::after {
-            content: "";
+        .hero-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .hero-overlay {
             position: absolute;
             top: 0; left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.45); /* subtle dark overlay */
-            border-radius: var(--border-radius);
+            background: rgba(0,0,0,0.45);
+            backdrop-filter: blur(12px) saturate(150%);
+            -webkit-backdrop-filter: blur(12px) saturate(150%);
             z-index: 1;
+            transition: all 0.5s ease;
         }
 
         .hero-text-overlay {
@@ -29,18 +40,42 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            color: yellow;
+            color: #FFD700;
             z-index: 2;
             text-align: center;
+            max-width: 90%;
+            transition: all 0.5s ease;
         }
 
         .hero-text-overlay h1 {
-            font-size: var(--font-size-xl);
-            margin-bottom: 10px;
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.6);
         }
 
         .hero-text-overlay p {
-            font-size: var(--font-size-md);
+            font-size: clamp(1rem, 2.5vw, 1.3rem);
+            font-weight: 500;
+            color: #FFF8DC;
+            text-shadow: 0 1px 6px rgba(0,0,0,0.5);
+        }
+
+        /* Hover effect: remove overlay completely */
+        .hero-container:hover .hero-overlay {
+            background: transparent;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+        }
+
+        .hero-container:hover .hero-image {
+            transform: scale(1.05);
+        }
+
+        .hero-container:hover .hero-text-overlay h1,
+        .hero-container:hover .hero-text-overlay p {
+            text-shadow: 0 2px 6px rgba(0,0,0,0.3);
         }
 
         /* Article cards */
@@ -61,14 +96,47 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            color: yellow;
-            font-weight: 500;
+                        font-weight: 500;
         }
 
         .article-list-date {
             color: var(--gray);
             font-size: 0.9rem;
+        }    
+
+        /* Sort Dropdown */
+        .sort-container {
+            display: inline-flex; /* shrink to content */
+            align-items: center;
+            border-radius: 12px;
+            padding: 4px 8px;
+            gap: 8px;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
         }
+
+
+    .sort-container label {
+        font-weight: 500;
+    }
+
+    .sort-select {
+        padding: 3px 8px;
+        border-radius: 8px;
+        border: none;
+        background-color: rgba(0,0,0,0.7);
+        color: #FFF8DC;
+        font-weight: 500;
+        cursor: pointer;
+        min-width: 120px;
+        transition: all 0.3s ease;
+    }
+
+    .sort-select:hover, .sort-select:focus {
+        background-color: rgba(0,0,0,0.85);
+        outline: none;
+    }
 
         /* Pagination */
         .pagination {
@@ -98,14 +166,22 @@
             .article-ul li {
                 flex-direction: column;
             }
+            .sort-container {
+                justify-content: center;
+            }
         }
     </style>
 </head>
 <body>
 
     <!-- Hero Section -->
-    <div class="hero-container container">
+    <div class="hero-container">
         <img src="/img/Cinc.jpg" alt="Oluwaseye Oyadiran" class="hero-image">
+
+        <!-- Liquid-glass overlay -->
+        <div class="hero-overlay"></div>
+
+        <!-- Text Overlay -->
         <div class="hero-text-overlay">
             <h1>Hi, I am Oluwaseye Oyadiran</h1>
             <p>Tech Professional & Entrepreneur</p>
@@ -116,10 +192,20 @@
     <section class="articles container">
         <h2 class="article__heading">Latest Posts</h2>
 
-        <ul class="article-ul">
+        <!-- Sort Dropdown -->
+        <div class="sort-container">
+            <label for="sortSelect">Sort by:</label>
+            <select id="sortSelect" class="sort-select" onchange="sortPosts()">
+                <option value="newest" selected>Newest</option>
+                <option value="oldest">Oldest</option>
+                <option value="popular">Most Popular</option>
+            </select>
+        </div>
+
+        <ul id="articlesList" class="article-ul">
             <% if (data && data.length > 0) { %>
                 <% data.forEach(post => { %>
-                    <li>
+                    <li data-created="<%= post.createdAt %>" data-views="<%= post.views %>">
                         <a href="/post/<%= post._id %>">
                             <span><%= post.title %></span>
                             <span class="article-list-date"><%= post.createdAt.toDateString() %></span>
@@ -136,6 +222,31 @@
         <% } %>
     </section>
 
+    <script>
+        function sortPosts() {
+            const sortType = document.getElementById('sortSelect').value;
+            const list = document.getElementById('articlesList');
+            const items = Array.from(list.children);
+
+            items.sort((a, b) => {
+                if(sortType === 'newest') {
+                    return new Date(b.dataset.created) - new Date(a.dataset.created);
+                } else if(sortType === 'oldest') {
+                    return new Date(a.dataset.created) - new Date(b.dataset.created);
+                } else if(sortType === 'popular') {
+                    return b.dataset.views - a.dataset.views;
+                }
+            });
+
+            // Remove old items
+            while(list.firstChild) {
+                list.removeChild(list.firstChild);
+            }
+
+            // Append sorted items
+            items.forEach(item => list.appendChild(item));
+        }
+    </script>
 
 </body>
 </html>

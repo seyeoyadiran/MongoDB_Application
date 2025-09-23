@@ -10,6 +10,8 @@ const session = require('express-session')
 
 const connectDB = require('./server/config/db');
 const { isActiveRoute } = require('./server/helpers/routeHelpers')
+const adminRoutes = require("./server/routes/admin");
+
 
 const app = express();
 const PORT = 3000 || process.env.PORT;
@@ -32,7 +34,7 @@ app.use(session({
     // cookie: {maxAge: new Date (Date.now() + (3600000))}
 }))
 app.use(express.static('public'));
-
+app.use("/admin", adminRoutes);
 //Templating Engine
 app.use(expressLayout);
 app.set('layout', './layouts/main');
@@ -42,6 +44,7 @@ app.locals.isActiveRoute = isActiveRoute;
 
  app.use('/', require('./server/routes/main')); 
  app.use('/', require('./server/routes/admin')); 
+ 
 
 app.listen(PORT, ()=> {
     console.log(`App listening on port ${PORT}`);
