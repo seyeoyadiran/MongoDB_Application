@@ -12,6 +12,7 @@ const connectDB = require('./server/config/db');
 const { isActiveRoute } = require('./server/helpers/routeHelpers')
 const adminRoutes = require("./server/routes/admin");
 
+// app.use(express.static('public'));
 
 const app = express();
 const PORT = 3000 || process.env.PORT;

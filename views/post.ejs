@@ -17,6 +17,132 @@
             color: yellow;
         }
 
+        /* Featured Media */
+        .post-featured-media {
+            width: 100%;
+            border-radius: var(--border-radius);
+            margin-bottom: 25px;
+            object-fit: cover;
+            max-height: 400px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+        }
+
+        .featured-video {
+            width: 100%;
+            height: 400px;
+            border-radius: var(--border-radius);
+        }
+
+        /* Title */
+        .post-title {
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        /* Meta info */
+        .post-meta {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 25px;
+        }
+
+        /* Article text */
+        .article {
+            font-size: var(--font-size-md);
+            line-height: 1.8;
+            white-space: pre-wrap;
+        }
+
+        /* Back button */
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 10px 20px;
+            background-color: var(--black);
+            color: yellow;
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            font-weight: 500;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .back-link:hover {
+            background-color: var(--gray-light);
+            color: var(--black);
+        }
+
+        @media (max-width: 768px) {
+            .post-container {
+                padding: 20px;
+            }
+
+            .post-title {
+                font-size: clamp(1.8rem, 5vw, 2.5rem);
+            }
+
+            .featured-video {
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="post-container container">
+
+        <% if (data.featuredImage) { %>
+            <% if (data.mediaType === 'image') { %>
+                <img src="<%= data.featuredImage %>" alt="<%= data.title %>" class="post-featured-media">
+            <% } else if (data.mediaType === 'video') { %>
+                <video controls class="featured-video">
+                    <source src="<%= data.featuredImage %>" type="video/mp4">
+                    <source src="<%= data.featuredImage %>" type="video/webm">
+                    Your browser does not support the video tag.
+                </video>
+            <% } else { %>
+                <!-- Fallback for existing posts without mediaType -->
+                <img src="<%= data.featuredImage %>" alt="<%= data.title %>" class="post-featured-media">
+            <% } %>
+        <% } %>
+
+        <h1 class="post-title"><%= data.title %></h1>
+
+        <div class="post-meta">
+            Posted on <%= data.createdAt.toDateString() %> • by Oluwaseye Oyadiran • 3 min read
+        </div>
+
+        <article class="article">
+            <%= data.body %>
+        </article>
+
+        <a href="/" class="back-link">&larr; Back to Posts</a>
+
+    </div>
+
+</body>
+</html>
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><%= data.title %> - Oluwaseye Oyadiran</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Post Container */
+        .post-container {
+            max-width: 800px;
+            margin: 40px auto;
+            background-color: #1c1c1c;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+            color: yellow;
+        }
+
         /* Featured Image */
         .post-featured-img {
             width: 100%;
@@ -102,7 +228,7 @@
 </body>
 </html>
 
-
+ -->
 
 
 
