@@ -97,51 +97,103 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-                        font-weight: 500;
+            font-weight: 500;
         }
 
         .article-list-date {
             color: var(--gray);
             font-size: 0.9rem;
-        }    
-
-        /* Sort Dropdown */
-        .sort-container {
-            display: inline-flex; /* shrink to content */
-            align-items: center;
-            border-radius: 12px;
-            padding: 4px 8px;
-            gap: 8px;
-            font-size: 0.9rem;
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
         }
 
+        /* Sort Dropdown - Fixed Styling */
+        .sort-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
 
-    .sort-container label {
-        font-weight: 500;
-    }
+        .sort-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
 
-    .sort-select {
-        padding: 3px 8px;
-        border-radius: 8px;
-        border: none;
-        background-color: rgba(0,0,0,0.7);
-        color: #FFF8DC;
-        font-weight: 500;
-        cursor: pointer;
-        min-width: 100px;
-        transition: all 0.3s ease;
-    }
+        .sort-container label {
+            font-weight: 500;
+            white-space: nowrap;
+        }
 
-    sortSelect {
-        margin-right: 20px;
-    }
+        .sort-select {
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 0, 0.3);
+            background-color: rgba(0,0,0,0.9);
+            color: #FFF8DC;
+            font-weight: 500;
+            cursor: pointer;
+            min-width: 140px;
+            transition: all 0.3s ease;
+            margin-top: 16px;
+        }
 
-    .sort-select:hover, .sort-select:focus {
-        background-color: rgba(0,0,0,0.85);
-        outline: none;
-    }
+        .sort-select:hover, .sort-select:focus {
+            background-color: rgba(0,0,0,1);
+            border-color: rgba(255, 255, 0, 0.6);
+            outline: none;
+        }
+
+        /* View All Button */
+        .view-all-btn {
+            padding: 8px 16px;
+            background: rgba(255, 255, 0, 0.1);
+            color: yellow;
+            border: 1px solid rgba(255, 255, 0, 0.3);
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .view-all-btn:hover {
+            background: rgba(255, 255, 0, 0.2);
+            transform: translateY(-1px);
+        }
+
+        /* Scrollable container for View All */
+        .scroll-container {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+        }
+
+        .scroll-container.active {
+            max-height: 600px; /* Adjust based on your needs */
+            overflow-y: auto;
+        }
+
+        .scroll-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .scroll-container::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.3);
+            border-radius: 4px;
+        }
+
+        .scroll-container::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 0, 0.3);
+            border-radius: 4px;
+        }
+
+        .scroll-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 0, 0.5);
+        }
 
         /* Pagination */
         .pagination {
@@ -168,11 +220,18 @@
             .hero-text-overlay p {
                 font-size: clamp(1rem, 3vw, 1.2rem);
             }
-            .article-ul li {
+            .article-ul li a {
                 flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
             }
             .sort-container {
-                justify-content: center;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .sort-group {
+                width: 100%;
+                justify-content: space-between;
             }
         }
     </style>
@@ -197,21 +256,26 @@
     <section class="articles container">
         <h2 class="article__heading">Latest Posts</h2>
 
-        <!-- Sort Dropdown -->
+        <!-- Sort Dropdown and View All Button -->
         <div class="sort-container">
-            <label for="sortSelect">Sort by:</label>
-            <select id="sortSelect" class="sort-select" onchange="sortPosts()">
-                <option value="newest" selected>Newest</option>
-                <option value="oldest">Oldest</option>
-                <option value="popular">Most Popular</option>
-            </select>
+            <div class="sort-group">
+                <label for="sortSelect">Sort by:</label>
+                <select id="sortSelect" class="sort-select" onchange="sortPosts()">
+                    <option value="newest" selected>Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="popular">Most Popular</option>
+                </select>
+            </div>
             
+            <button class="view-all-btn" onclick="toggleViewAll()">View All Posts</button>
         </div>
 
+        <!-- Regular posts list -->
         <ul id="articlesList" class="article-ul">
             <% if (data && data.length > 0) { %>
-                <% data.forEach(post => { %>
-                    <li data-created="<%= post.createdAt %>" data-views="<%= post.views %>">
+                <% data.forEach((post, index) => { %>
+                    <li data-created="<%= post.createdAt %>" data-views="<%= post.views %>" 
+                        <%= index >= 5 ? 'style="display: none;"' : '' %>>
                         <a href="/post/<%= post._id %>">
                             <span><%= post.title %></span>
                             <span class="article-list-date"><%= post.createdAt.toDateString() %></span>
@@ -223,15 +287,35 @@
             <% } %>
         </ul>
 
+        <!-- Scrollable container for View All -->
+        <div id="scrollContainer" class="scroll-container">
+            <ul id="allArticlesList" class="article-ul" style="display: none;">
+                <!-- This will be populated with all posts when View All is clicked -->
+            </ul>
+        </div>
+
         <% if (nextPage !== null) { %>
-            <a href="/?page=<%= nextPage %>" class="pagination">&lt; View Older Posts</a>
+            <a href="/?page=<%= nextPage %>" class="pagination">&lt; View Other Posts</a>
         <% } %>
     </section>
 
     <script>
+        let allPosts = [];
+        let isViewAllActive = false;
+
+        // Initialize all posts data
+        function initializePosts() {
+            const items = Array.from(document.querySelectorAll('#articlesList li'));
+            allPosts = items.map(item => ({
+                element: item,
+                created: item.dataset.created,
+                views: parseInt(item.dataset.views) || 0
+            }));
+        }
+
         function sortPosts() {
             const sortType = document.getElementById('sortSelect').value;
-            const list = document.getElementById('articlesList');
+            const list = isViewAllActive ? document.getElementById('allArticlesList') : document.getElementById('articlesList');
             const items = Array.from(list.children);
 
             items.sort((a, b) => {
@@ -240,7 +324,7 @@
                 } else if(sortType === 'oldest') {
                     return new Date(a.dataset.created) - new Date(b.dataset.created);
                 } else if(sortType === 'popular') {
-                    return b.dataset.views - a.dataset.views;
+                    return (parseInt(b.dataset.views) || 0) - (parseInt(a.dataset.views) || 0);
                 }
             });
 
@@ -252,6 +336,52 @@
             // Append sorted items
             items.forEach(item => list.appendChild(item));
         }
+
+        function toggleViewAll() {
+            const scrollContainer = document.getElementById('scrollContainer');
+            const allArticlesList = document.getElementById('allArticlesList');
+            const regularList = document.getElementById('articlesList');
+            const viewAllBtn = document.querySelector('.view-all-btn');
+
+            if (!isViewAllActive) {
+                // Show all posts
+                allArticlesList.innerHTML = regularList.innerHTML;
+                allArticlesList.style.display = 'block';
+                regularList.style.display = 'none';
+                scrollContainer.classList.add('active');
+                viewAllBtn.textContent = 'Show Less';
+                isViewAllActive = true;
+                
+                // Show all items (remove display: none)
+                const allItems = allArticlesList.querySelectorAll('li');
+                allItems.forEach(item => item.style.display = '');
+                
+                // Sort the all posts list
+                sortPosts();
+            } else {
+                // Return to regular view
+                scrollContainer.classList.remove('active');
+                setTimeout(() => {
+                    allArticlesList.style.display = 'none';
+                    regularList.style.display = 'block';
+                    viewAllBtn.textContent = 'View All Posts';
+                    isViewAllActive = false;
+                }, 500);
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializePosts();
+            
+            // Initially show only first 5 posts
+            const items = document.querySelectorAll('#articlesList li');
+            items.forEach((item, index) => {
+                if (index >= 5) {
+                    item.style.display = 'none';
+                }
+            });
+        });
     </script>
 
 </body>

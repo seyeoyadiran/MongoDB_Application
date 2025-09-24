@@ -1,31 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><%= data.title %> - Oluwaseye Oyadiran</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Post Container */
+        .post-container {
+            max-width: 800px;
+            margin: 40px auto;
+            background-color: #1c1c1c;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            color: #f8f8f8;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            position: relative;
+        }
 
-<!-- 
-<div class="author">
-    <h1> Hi, I am Oluwaseye Oyadiran</h1>
-    <p class="author"> Software Engineer and Entrepreneur.</p>
- </div>
+        /* Decorative top accent */
+        .post-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, yellow, #ffd700, yellow);
+            border-radius: 12px 12px 0 0;
+        }
 
- <img src="/img/Cinc.jpg" alt="Selfie" height="528" width="981" class="hero-image" >
- 
- 
- <section class="articles">
-    <h2 class="articles_heading">Latest Posts</h2>
+        /* Featured Media */
+        .post-featured-media {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            object-fit: cover;
+            max-height: 400px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+            transition: transform 0.3s ease;
+        }
 
-    <ul class="article-ul">
-     <% data.forEach(post => { %>
-        <li>
-            <a href="/post/<%= post._id %>">
-                <span> <%= post.title %>  </span>
-                <span class="article-list__date"> <%= post.createdAt.toDateString() %>  </span>
-            </a>
-        </li>
-        <% }) %>
-    </ul>
+        .post-featured-media:hover {
+            transform: scale(1.01);
+        }
 
-    <% if (nextPage !== null) { %>
-        <a href="/?page=<%= nextPage %>" class="pagination">&lt; View Older Posts</a>
-    <% } %>
+        .featured-video {
+            width: 100%;
+            height: 400px;
+            border-radius: 8px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+        }
 
-    
-</section>
- -->
+        /* Title */
+        .post-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            line-height: 1.2;
+            color: yellow;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* Meta info */
+        .post-meta {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 0.95rem;
+            color: #bbb;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #333;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .meta-item::before {
+            content: '•';
+            margin-right: 5px;
+            color: yellow;
+        }
+
+        .meta-item:first-child::before {
+            display: none;
+        }
+
+        /* Article text */
+        s
+        .article {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            text-indent: 0; /* Fix for the indentation issue */
+        }
+
+        .article p:first-child {
+            font-size: 1.15rem;
+            color: #f0f0f0;
+            font-weight: 500;
+            margin-bottom: 25px;
+        }
+
+        /* Back button */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            margin-top: 40px;
+            padding: 12px 24px;
+            background-color: rgba(255, 255, 0, 0.1);
+            color: yellow;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 0, 0.2);
+        }
+
+        .back-link:hover {
+            background-color: yellow;
+            color: #1c1c1c;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 255, 0, 0.2);
+        }
+
+        /* Social sharing */
+        .post-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+        }
+
+     
+        @media (max-width: 768px) {
+            .post-container {
+                padding: 25px 20px;
+                margin: 20px auto;
+            }
+
+            .post-title {
+                font-size: 2rem;
+            }
+
+            .featured-video {
+                height: 250px;
+            }
+
+            .post-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .meta-item::before {
+                display: none;
+            }
+
+            .post-actions {
+                flex-direction: column;
+                gap: 20px;
+                align-items: flex-start;
+            }
+            
+        }
+    </style>
+</head>
+<body>
+
+    <div class="post-container container">
+
+        <% if (data.featuredImage) { %>
+            <% if (data.mediaType === 'image') { %>
+                <img src="<%= data.featuredImage %>" alt="<%= data.title %>" class="post-featured-media">
+            <% } else if (data.mediaType === 'video') { %>
+                <video controls class="featured-video">
+                    <source src="<%= data.featuredImage %>" type="video/mp4">
+                    <source src="<%= data.featuredImage %>" type="video/webm">
+                    Your browser does not support the video tag.
+                </video>
+            <% } else { %>
+                <!-- Fallback for existing posts without mediaType -->
+                <img src="<%= data.featuredImage %>" alt="<%= data.title %>" class="post-featured-media">
+            <% } %>
+        <% } %>
+
+        <h1 class="post-title"><%= data.title %></h1>
+
+        <div class="post-meta">
+            <div class="meta-item">Posted on <%= data.createdAt.toDateString() %></div>
+            <div class="meta-item">by Oluwaseye Oyadiran</div>
+            <div class="meta-item">3 min read</div>
+        </div>
+
+        <article class="article">
+            <%= data.body %>
+        </article>
+
+        <div class="post-actions">
+            <a href="/" class="back-link">&larr; Back to Posts</a>
+       
+        </div>
+
+    </div>
+
+</body>
+</html>
